@@ -5,7 +5,7 @@ namespace autenticacao.Data.Dtos
     public class CreateUsuarioDto
     {
         [Required]
-        public string Nome { get; set; }
+        public string Username { get; set; }
         [Required]
         public DateTime DataNascimento { get; set; }
         [Required]
