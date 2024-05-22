@@ -14,15 +14,14 @@ namespace autenticacao.UseCases
         private IMapper _mapper;
         private UserManager<Usuario> _usuarioManager;
         private SignInManager<Usuario> _signInManager;
-        private IConfiguration _configuration;
+        private ITokenUseCases _tokenUseCases;
 
-        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, IConfiguration configuration)
+        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, ITokenUseCases tokenUseCases)
         {
             _mapper = mapper;
             _usuarioManager = usuarioManager;
             _signInManager = signInManager;
-            _configuration = configuration;
-            _configuration = configuration;
+            _tokenUseCases = tokenUseCases;
         }
         public async Task<bool> CadastrarUsuarioAsync(CreateUsuarioDto usuarioDto)
         {
@@ -47,35 +46,13 @@ namespace autenticacao.UseCases
 
             if (resultado.Succeeded)
             {
-                string token = GerarTokenJwt(usuario);
+                string token = _tokenUseCases.GerarTokenJwt(usuario);
                 return token;
             }
             else
             {
                 return "Usuário ou senha inválidos";
             }
-        }
-        public string GerarTokenJwt(Usuario usuario)
-        {
-            Claim[] claims = new Claim[]
-            {
-                new Claim("username", usuario.UserName),
-                new Claim("id", usuario.Id),
-                new Claim(ClaimTypes.DateOfBirth, usuario.DataNascimento.ToString())
-            };
-
-            var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SymmetricSecurityKey"]));
-
-            var signingCredentials = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken
-                (
-                 expires: DateTime.Now.AddMinutes(10),
-                 claims: claims,
-                 signingCredentials: signingCredentials
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace autenticacao.Data.Dtos
 {
-    public class CreateUsuarioDto
+    public record CreateUsuarioDto
     {
         [Required]
         public string Username { get; set; }

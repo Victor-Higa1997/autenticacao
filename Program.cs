@@ -23,6 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<ITokenUseCases, TokenUseCases>();
 builder.Services.AddScoped<IUsuarioUseCases, UsuarioUseCases>();
 builder.Services.AddSingleton<IAuthorizationHandler, IdadeAuthorization>();
 
@@ -48,9 +49,11 @@ builder.Services.AddAuthorization(options =>
         );
 });
 
+var connString = builder.Configuration["ConnectionStrings:DefaultConnection"];
+
 builder.Services.AddDbContext<UsuarioContext>(options =>
 {
-    options.UseMySql(builder.Configuration.GetConnectionString(builder.Configuration["ConnectionStrings:DefaultConnection"]), new MySqlServerVersion(new Version(8, 0, 25)));
+    options.UseMySql(connString, ServerVersion.AutoDetect(connString));
 });
 
 var app = builder.Build();
