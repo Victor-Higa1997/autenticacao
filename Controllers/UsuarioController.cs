@@ -38,12 +38,14 @@ namespace autenticacao.Controllers
         {
             try
             {
-                return _usuarioUseCases.Login(loginDto) ? Ok("Login efetuado com sucesso!") : throw new Exception();
+                var token = await _usuarioUseCases.Login(loginDto);
+                return token != null ? Ok(token) : throw new Exception();
             }
             catch (Exception)
             {
-                return new BadRequestResult();
+                throw new Exception();
             }
+
         }
 
     }
