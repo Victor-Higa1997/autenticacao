@@ -4,6 +4,7 @@ namespace autenticacao.UseCases
 {
     public interface IUsuarioUseCases
     {
-        Task<bool> CadastrarUsuario(CreateUsuarioDto usuarioDto);
+        Task<bool> CadastrarUsuarioAsync(CreateUsuarioDto usuarioDto);
+        bool Login(CreateLoginDto loginDto);
     }
 }

@@ -20,12 +20,25 @@ namespace autenticacao.Controllers
             _usuarioUseCases = usuarioUseCases;
         }
 
-        [HttpPost]
+        [HttpPost("cadastro")]
         public async Task<IActionResult> CadastrarUsuario(CreateUsuarioDto usuarioDto)
         {
             try
             {
-                return await _usuarioUseCases.CadastrarUsuario(usuarioDto) ? Ok("Usuario cadastrado!") : throw new Exception();
+                return await _usuarioUseCases.CadastrarUsuarioAsync(usuarioDto) ? Ok("Usuario cadastrado!") : throw new Exception();
+            }
+            catch (Exception)
+            {
+                return new BadRequestResult();
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(CreateLoginDto loginDto)
+        {
+            try
+            {
+                return _usuarioUseCases.Login(loginDto) ? Ok("Login efetuado com sucesso!") : throw new Exception();
             }
             catch (Exception)
             {

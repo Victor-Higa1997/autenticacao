@@ -9,13 +9,15 @@ namespace autenticacao.UseCases
     {
         private IMapper _mapper;
         private UserManager<Usuario> _usuarioManager;
+        private SignInManager<Usuario> _signInManager;
 
-        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager)
+        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager)
         {
             _mapper = mapper;
             _usuarioManager = usuarioManager;
+            _signInManager = signInManager;
         }
-        public async Task<bool> CadastrarUsuario(CreateUsuarioDto usuarioDto)
+        public async Task<bool> CadastrarUsuarioAsync(CreateUsuarioDto usuarioDto)
         {
 
             try
@@ -30,9 +32,13 @@ namespace autenticacao.UseCases
             {
                 throw;
             }
-
-            
-
         }
+
+        public bool Login(CreateLoginDto loginDto)
+        {
+            SignInResult resultado = _signInManager.PasswordSignInAsync(loginDto.Nome, loginDto.Senha, false, false).Result;
+
+            return resultado.Succeeded;
+        }   
     }
 }
