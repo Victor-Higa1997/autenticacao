@@ -14,12 +14,15 @@ namespace autenticacao.UseCases
         private IMapper _mapper;
         private UserManager<Usuario> _usuarioManager;
         private SignInManager<Usuario> _signInManager;
+        private IConfiguration _configuration;
 
-        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager)
+        public UsuarioUseCases(IMapper mapper, UserManager<Usuario> usuarioManager, SignInManager<Usuario> signInManager, IConfiguration configuration)
         {
             _mapper = mapper;
             _usuarioManager = usuarioManager;
             _signInManager = signInManager;
+            _configuration = configuration;
+            _configuration = configuration;
         }
         public async Task<bool> CadastrarUsuarioAsync(CreateUsuarioDto usuarioDto)
         {
@@ -29,7 +32,7 @@ namespace autenticacao.UseCases
 
                 IdentityResult resultado = await _usuarioManager.CreateAsync(usuario, usuarioDto.Senha);
 
-                return resultado.Succeeded;
+                return resultado.Succeeded; 
             }
             catch (Exception)
             {
@@ -40,7 +43,7 @@ namespace autenticacao.UseCases
         {
             SignInResult resultado = await _signInManager.PasswordSignInAsync(loginDto.Nome, loginDto.Senha, false, false);
 
-            var usuario = _signInManager.UserManager.Users.FirstOrDefault(u => u.UserName == loginDto.Nome.ToUpper());
+            var usuario = _signInManager.UserManager.Users.FirstOrDefault(u => u.NormalizedUserName == loginDto.Nome.ToUpper());
 
             if (resultado.Succeeded)
             {
@@ -58,10 +61,10 @@ namespace autenticacao.UseCases
             {
                 new Claim("username", usuario.UserName),
                 new Claim("id", usuario.Id),
-                new Claim("data", usuario.DataNascimento.ToString())
+                new Claim(ClaimTypes.DateOfBirth, usuario.DataNascimento.ToString())
             };
 
-            var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("9ASHDA98H9ah9ha9H9A89nOf"));
+            var chave = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SymmetricSecurityKey"]));
 
             var signingCredentials = new SigningCredentials(chave, SecurityAlgorithms.HmacSha256);
 
